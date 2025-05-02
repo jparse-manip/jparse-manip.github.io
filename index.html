@@ -85,6 +85,24 @@
     gtag('config', 'G-RZ6PES7EKD');
   </script>
   <style>
+
+  @media only screen and (min-width: 768px) {
+      .laptop-only-header {
+        display: block;
+      }
+      .game-section {
+        display: block;
+      }
+    }
+    
+    @media only screen and (max-width: 767px) {
+      .laptop-only-header {
+        display: none;
+      }
+      .game-section {
+        display: none;
+      }
+    }
     .video-label {
       text-align: center;
       font-size: 18px;
@@ -195,7 +213,7 @@
       <h3 class="col-md-12 text-center" id="title">
         <b>In Submission<br>
       </h3>
-      <h3 class="col-md-12 text-center" id="title">
+      <h3 class="col-md-12 text-center laptop-only-header" id="title">
         <span style="color: #e74c3c;">NEW!</span> <a href="#game-section" style="text-decoration: none;font-size: inherit;">Interactive Game</a> <span style="color: #2ecc71;">(Bottom of the Page)</span><br>
        </h3>
       
@@ -332,7 +350,6 @@
 
     <div class="gallery-container">
       <h1>Real-World Examples</h1>
-
       <div class="slide active" id="slide1">
         <div class="text-justify">
           When teleoperation is challenging with singularities...
@@ -672,7 +689,7 @@
               });
             </script>
 
-            <div class="row">
+            <div class="row game-section">
               <div class="col-sm-10 col-sm-offset-1 text-center">
                 <h1><b>Interactive Game </b></h1>
                 <h4>Check out our interactive game! Drag the the pink dot to control the target pose of the robot. Using J-PARSE, the three-link manipulator will be able to enter and exit the singularity!
