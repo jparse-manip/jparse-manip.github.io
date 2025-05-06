@@ -86,6 +86,56 @@
   </script>
   <style>
 
+.container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        
+        .text-justify {
+            text-align: justify;
+        }
+        
+        .toggle-container {
+            display: flex;
+            margin: 20px 0;
+            background-color: #f5f5f5;
+            border-radius: 50px;
+            width: fit-content;
+            padding: 4px;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .toggle-btn.active {
+            background-color: #4285f4;
+            color: white;
+        }
+        
+        .content-container > div {
+            display: none;
+        }
+        
+        .content-container > div.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
   @media only screen and (min-width: 768px) {
       .laptop-only-header {
         display: block;
@@ -141,6 +191,18 @@
       text-align: center;
       font-weight: normal;
     }
+
+    .styled-bold {
+            font-weight: bold;
+            display: inline-block;
+            background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 5px 0;
+            border-radius: 4px;
+            font-size: 1.1em;
+        }
 
     /* .text-justify {
       font-size: 24px;
@@ -319,28 +381,87 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-md-10 col-md-offset-1">
-        <h3>
-          Abstract
-        </h3>
-        <div class="text-justify">
-          J-PARSE is a method for smooth first-order inverse kinematic control of a serial manipulator near kinematic
-          singularities. The commanded end-effector velocity is interpreted component-wise, according to the available
-          mobility in each dimension of the task space. First, a substitute ``Safety" Jacobian matrix is created,
-          keeping the aspect ratio of the manipulability ellipsoid above a threshold value. The desired motion is then
-          projected onto non-singular and singular directions, and the latter projection scaled down by a factor
-          informed by the threshold value. A right-inverse of the non-singular Safety Jacobian is applied to the
-          modified command. In the absence of joint limits and collisions, this ensures smooth transition into and out
-          of low-rank poses, guaranteeing asymptotic stability for target poses within the workspace, and stability for
-          those outside. Velocity control with J-PARSE is benchmarked against the Least-Squares and Damped Least-Squares
-          inversions of the Jacobian, and shows high accuracy in reaching and leaving singular target poses. By
-          expanding the available workspace of manipulators, the method finds applications in servoing, teleoperation,
-          and learning.
-        </div>
-
+    <div class="container">
+      <div class="row">
+          <div class="col-md-10">
+              <div class="toggle-container">
+                  <button class="toggle-btn active" id="abstractBtn">Abstract</button>
+                  <button class="toggle-btn" id="laymanBtn">Lay Explanation</button>
+              </div>
+              
+              <div class="content-container">
+                  <div id="abstractContent" class="active">
+                      <h3>Abstract</h3>
+                      <div class="text-justify">
+                          J-PARSE is a method for smooth first-order inverse kinematic control of a serial manipulator near kinematic
+                          singularities. The commanded end-effector velocity is interpreted component-wise, according to the available
+                          mobility in each dimension of the task space. First, a substitute "Safety" Jacobian matrix is created,
+                          keeping the aspect ratio of the manipulability ellipsoid above a threshold value. The desired motion is then
+                          projected onto non-singular and singular directions, and the latter projection scaled down by a factor
+                          informed by the threshold value. A right-inverse of the non-singular Safety Jacobian is applied to the
+                          modified command. In the absence of joint limits and collisions, this ensures smooth transition into and out
+                          of low-rank poses, guaranteeing asymptotic stability for target poses within the workspace, and stability for
+                          those outside. Velocity control with J-PARSE is benchmarked against the Least-Squares and Damped Least-Squares
+                          inversions of the Jacobian, and shows high accuracy in reaching and leaving singular target poses. By
+                          expanding the available workspace of manipulators, the method finds applications in servoing, teleoperation,
+                          and learning.
+                      </div>
+                  </div>
+                  
+                  <div id="laymanContent" style="font-weight: normal">
+                      <h3>Layman's Explanation</h3>
+                      <div class="text-justify">
+                        <span class="styled-bold">What is the problem?</span>
+                        <br>
+                        When robots are in awkward poses called singularities, they have trouble moving in certain directions. For example, when they are almost fully stretched out, it's hard to move in or out, and much easier to move sideways. When a human operator specifies a speed and direction for the robot hand, without accounting for this, the joints start spinning wildly in an effort to achieve the impossible. 
+                          <br><br>
+                          <span class="styled-bold">What was the most common solution?</span>
+                          <br>
+                          Most existing controllers avoid such configurations, either by slowing down and stopping before they occur, or by letting the joints speed up until a point and then suddenly going into emergency-stop mode. Neither approach is intuitive for users and neither allows the robot to make use of its full reachable space. 
+                          <br><br>
+                          <span class="styled-bold">What do we propose instead?  </span>
+                          <br>
+                          We propose a modification that lets the robot continue moving as best it can, even if asked to enter or leave a singular pose. The idea behind the modification is: in the direction in which the hand can move easily, it should move as asked; in the other direction, the motion request should be diminished. The harder it is to move <em>in that direction</em>, the lower the speed that should be asked of it in that direction. By selectively slowing down, it becomes possible to keep the joints moving stably and still reach any reachable pose. But the robot should not be asked to stop -- neither in that direction nor any other -- just because it is close to singularity. 
+                          <br><br>
+                          <span class="styled-bold">What makes this relevant now?</span>
+                          <br>
+                          Traditionally, robots were used for repetitive tasks in industry. It was important to be fast and accurate in following preprogrammed motion requests. Handcrafting the location of the assembly line in order to avoid singularities was no problem. Today, when humans interact closely with robotic arms in everyday settings, it is much more important for robots to reach where they are asked to reach and to move in predictable ways. It is much more acceptable to slow down if necessary, rather than to simply "stop trying" in response to certain requests.
+                          <br><br>
+                          <span class="styled-bold">Is there a simple analogy?</span>
+                          <br>
+                          A child (or for that matter, an adult) is good at one activity and finds another extremely daunting. The goal is for this child to achieve a task that relies on successful completion of both activities. As a teacher, the options are:
+                        1. Insist on both parts being completed in a short period of time. The child's confidence is shattered and neither part gets done. In fact everything goes downhill after this. Even bystanders suffer.
+                        <br>
+                        2. Decide that nothing can be done about the task as a whole. Instruct the child not to attempt it. The task remains undone and the skill unlearned. The child never even finds out what was possible.
+                        <br>
+                        3. Explain that the task has two parts. The first part can and should be done, and will move fast and be done well. For the second part, ask first for only a start, a small piece of the job. Once the start is made, ask for a little more, something manageable. Explain that there is enough time to learn and do just that piece for now. Keep breaking the activity into parts and stepping through it piece by piece. In time, the entire task will be completed, and the child's capabilities expanded.
+                      </div>
+                  </div>
+              </div>
+          </div>
       </div>
-    </div>
+  </div>
+
+  <script>
+
+      const abstractBtn = document.getElementById('abstractBtn');
+      const laymanBtn = document.getElementById('laymanBtn');
+      const abstractContent = document.getElementById('abstractContent');
+      const laymanContent = document.getElementById('laymanContent');
+      abstractBtn.addEventListener('click', function() {
+          abstractBtn.classList.add('active');
+          laymanBtn.classList.remove('active');
+          abstractContent.classList.add('active');
+          laymanContent.classList.remove('active');
+      });
+      
+      laymanBtn.addEventListener('click', function() {
+          laymanBtn.classList.add('active');
+          abstractBtn.classList.remove('active');
+          laymanContent.classList.add('active');
+          abstractContent.classList.remove('active');
+      });
+  </script>
 
     <div class="row">
       <div class="col-sm-10 col-sm-offset-1 text-center">
